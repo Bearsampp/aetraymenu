@@ -5,3 +5,6 @@ __history
 *.exe
 *.drc
 *.map
+/.idea/aetraymenu.iml
+/.idea/deployment.xml
+/.idea/modules.xml
