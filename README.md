@@ -42,10 +42,10 @@ An overview of the most important features of AeTrayMenu:
 
 ## Who's using it?
 
-* [Aeonserv](http://aeonserv.sourceforge.net/) – An installer for Apache, PHP and more, also including the webportal package External link (opens in a new window)Geeklog.
-* [WAMP5](http://www.wampserver.com/) – Another excellent installer for Apache, PHP and more.
-* [bearsampp](http://bearsampp.io) - Portable WAMP software stack.
+* [Aeonserv](http://aeonserv.sourceforge.net/) ï¿½ An installer for Apache, PHP and more, also including the webportal package External link (opens in a new window)Geeklog.
+* [WAMP5](http://www.wampserver.com/) ï¿½ Another excellent installer for Apache, PHP and more.
+* [bearsampp](http://bearsampp.github.io) - Enhanced Portable WAMP software stack.
 
 ## Downloads
 
-[Download](https://github.com/crazy-max/aetraymenu/releases/download/1.6.2/aetraymenu.zip) (ZIP; 1058 kB) – Archive including both the version of AeTrayMenu compiled with MadExcept (for non-commercial use only) and the version without MadExcept (for commercial use).
+[Download](https://github.com/crazy-max/aetraymenu/releases/download/1.6.2/aetraymenu.zip) (ZIP; 1058 kB) ï¿½ Archive including both the version of AeTrayMenu compiled with MadExcept (for non-commercial use only) and the version without MadExcept (for commercial use).
