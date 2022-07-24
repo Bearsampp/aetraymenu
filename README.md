@@ -44,7 +44,7 @@ An overview of the most important features of AeTrayMenu:
 
 * [Aeonserv](http://aeonserv.sourceforge.net/) � An installer for Apache, PHP and more, also including the webportal package External link (opens in a new window)Geeklog.
 * [WAMP5](http://www.wampserver.com/) � Another excellent installer for Apache, PHP and more.
-* [bearsampp](http://bearsampp.github.io) - Enhanced Portable WAMP software stack.
+* [Bearsampp](http://bearsampp.com) - Enhanced Portable WAMP software stack.
 
 ## Downloads
 
