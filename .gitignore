@@ -8,3 +8,6 @@ __history
 /.idea/aetraymenu.iml
 /.idea/deployment.xml
 /.idea/modules.xml
+/.idea/discord.xml
+/.idea/php.xml
+/.idea/vcs.xml
