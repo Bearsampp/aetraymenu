@@ -1,13 +1,18 @@
-*.dproj.local
-*.identcache
-__history
-*.dcu
-*.exe
-*.drc
-*.map
-/.idea/aetraymenu.iml
+# Jetbrains
+/*.iml
+/.idea
+/.idea/.gitignore
 /.idea/deployment.xml
-/.idea/modules.xml
 /.idea/discord.xml
+/.idea/module-perl.iml
+/.idea/modules.xml
 /.idea/php.xml
 /.idea/vcs.xml
+
+# Bearsampp
+/.dev
+
+# Visual Studio
+.vscode/
+.vs/
+.vsc/
