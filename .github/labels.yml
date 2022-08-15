@@ -77,6 +77,7 @@
   name: ":coffin: wontfix"
   color: "ffffff"
   description: ""
+  from_name: "wontfix"
 - # Blocker
   name: ":triangular_flag_on_post: Blocker"
   color: "ff0000"
@@ -89,3 +90,7 @@
   name: ":closed_lock_with_key: Security"
   color: "CD5C5C"
   description: "Security issue"
+- # RTC
+  name: ":runner: RTC"
+  color: "87ceeb"
+  description: "Ready to commit"
