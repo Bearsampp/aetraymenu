@@ -49,3 +49,14 @@ An overview of the most important features of AeTrayMenu:
 ## Downloads
 
 [Download](https://github.com/crazy-max/aetraymenu/releases/download/1.6.2/aetraymenu.zip) (ZIP; 1058 kB) � Archive including both the version of AeTrayMenu compiled with MadExcept (for non-commercial use only) and the version without MadExcept (for commercial use).
+
+
+## Sponsors
+
+We would like to thank our sponsors to the project:
+
+[N6REJ](https://github.com/N6REJ)<br />
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" width="80">
+
+[![Code Shelter](https://www.codeshelter.co/static/badges/badge-flat.svg)](https://www.codeshelter.co/)
