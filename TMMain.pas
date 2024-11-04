@@ -20,7 +20,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, BarMenus, JvComponent, JvTrayIcon, ExtCtrls,
   Contnrs, ImgList,
-  TMStruct, TMSrvCtrl, JvComponentBase;
+  TMStruct, TMSrvCtrl, JvComponentBase, System.ImageList;
 
 type
   TMainForm = class(TForm)

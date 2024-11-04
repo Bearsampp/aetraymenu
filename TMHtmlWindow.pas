@@ -18,14 +18,14 @@ type
     Bevel1: TBevel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CloseBtnClick(Sender: TObject);
-    procedure WebBrowserBeforeNavigate2(Sender: TObject;
-      const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
-      Headers: OleVariant; var Cancel: WordBool);
-    procedure WebBrowserDocumentComplete(Sender: TObject;
-      const pDisp: IDispatch; var URL: OleVariant);
     procedure FormShow(Sender: TObject);
     procedure WebBrowserTitleChange(Sender: TObject;
       const Text: WideString);
+    procedure WebBrowserBeforeNavigate2(ASender: TObject;
+      const pDisp: IDispatch; const URL, Flags, TargetFrameName, PostData,
+      Headers: OleVariant; var Cancel: WordBool);
+    procedure WebBrowserDocumentComplete(ASender: TObject;
+      const pDisp: IDispatch; const URL: OleVariant);
   private
     FSrc: String;
     FHeader: String;
@@ -62,7 +62,7 @@ var
   HookID: THandle;
   MouseHookEnabled: Boolean;
 
-function MouseProc(nCode: Integer; wParam, lParam: Longint): Longint; stdcall;
+function MouseProc(nCode: Integer; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 var
   szClassName: array[0..255] of Char;
 const
@@ -190,8 +190,8 @@ begin
   WebBrowser.Navigate(Value);
 end;
 
-procedure THtmlWindow.WebBrowserBeforeNavigate2(Sender: TObject;
-  const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
+procedure THtmlWindow.WebBrowserBeforeNavigate2(ASender: TObject;
+  const pDisp: IDispatch; const URL, Flags, TargetFrameName, PostData,
   Headers: OleVariant; var Cancel: WordBool);
 var
   I: Integer;
@@ -212,8 +212,8 @@ begin
   end;
 end;
 
-procedure THtmlWindow.WebBrowserDocumentComplete(Sender: TObject;
-  const pDisp: IDispatch; var URL: OleVariant);
+procedure THtmlWindow.WebBrowserDocumentComplete(ASender: TObject;
+  const pDisp: IDispatch; const URL: OleVariant);
 begin
   { Apply some flags }
   if hwfNoScrollbars in HtmlWindowFlags then

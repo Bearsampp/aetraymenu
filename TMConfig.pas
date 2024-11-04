@@ -48,7 +48,7 @@ type
       const LineNumber: Integer = -1);
   end;
 
-  TEnumIniSectionProc = procedure(const Line: PChar; const Ext: Longint) of object;
+  TEnumIniSectionProc = procedure(const Line: PChar; const Ext: Pointer) of object;
 
   TTMConfigReader = class
   private
@@ -99,18 +99,18 @@ type
 
     { Reader methods }
     procedure EnumIniSection(const EnumProc: TEnumIniSectionProc;
-      const SectionName: String; const Ext: Longint);
+      const SectionName: String; const Ext: Pointer);
       { Enumerates values in a specified section, using the EnumProc
         procedure as a callback function. "Ext" will be used in the call
         to the EnumProc procedure. }
-    procedure EnumAboutText(const Line: PChar; const Ext: Longint);
-    procedure EnumConfig(const Line: PChar; const Ext: Longint);
-    procedure EnumMenuItems(const Line: PChar; const Ext: Integer);
-    procedure EnumMenuSettings(const Line: PChar; const Ext: Integer);
-    procedure EnumMultiAction(const Line: PChar; const Ext: Integer);
-    procedure EnumMessages(const Line: PChar; const Ext: Longint);
-    procedure EnumServices(const Line: PChar; const Ext: Integer);
-    procedure EnumVariables(const Line: PChar; const Ext: Integer);
+    procedure EnumAboutText(const Line: PChar; const Ext: Pointer);
+    procedure EnumConfig(const Line: PChar; const Ext: Pointer);
+    procedure EnumMenuItems(const Line: PChar; const Ext: Pointer);
+    procedure EnumMenuSettings(const Line: PChar; const Ext: Pointer);
+    procedure EnumMultiAction(const Line: PChar; const Ext: Pointer);
+    procedure EnumMessages(const Line: PChar; const Ext: Pointer);
+    procedure EnumServices(const Line: PChar; const Ext: Pointer);
+    procedure EnumVariables(const Line: PChar; const Ext: Pointer);
 
     { Miscellaneous procs  }
     procedure BreakString(S: PChar; var Output: TBreakStringArray);
@@ -176,7 +176,7 @@ type
 implementation
 
 uses TypInfo, JclStrings, Forms, Registry, JclFileUtils,
-     TMMsgs;
+     TMMsgs, System.UITypes;
 
 { EParseError }
 
@@ -359,12 +359,12 @@ begin
 end;
 
 procedure TTMConfigReader.EnumAboutText(const Line: PChar;
-  const Ext: Integer);
+  const Ext: Pointer);
 begin
   CustomAboutText.Add(String(Line));
 end;
 
-procedure TTMConfigReader.EnumConfig(const Line: PChar; const Ext: Longint);
+procedure TTMConfigReader.EnumConfig(const Line: PChar; const Ext: Pointer);
 
   procedure LoadImageList(BitmapFile: String);
   var
@@ -524,7 +524,7 @@ begin
 end;
 
 procedure TTMConfigReader.EnumIniSection(const EnumProc: TEnumIniSectionProc;
-  const SectionName: String; const Ext: Longint);
+  const SectionName: String; const Ext: Pointer);
 var
   FoundSection: Boolean;
   B, L, LastSection: String;
@@ -579,7 +579,7 @@ begin
 end;
 
 procedure TTMConfigReader.EnumMenuItems(const Line: PChar;
-  const Ext: Longint);
+  const Ext: Pointer);
 const
   ParamNames: array[0..20] of TParamInfo = (
     (Name: ParamMenuItemType; Flags: [piNoEmpty]),      //0
@@ -794,7 +794,7 @@ begin
                     (TMAction as TTMServiceAction).Service :=
                         (Services[FoundIndex] as TTMService)
                   else
-                    Tag := Longint(Services[FoundIndex]);
+                    Tag := NativeInt(Services[FoundIndex]);
                 end
                 else  //tmaction is ttmserviceaction or itemtype = mitservicesubmenu
                   AbortParsing(SParsingServiceParamInvalid);
@@ -943,13 +943,13 @@ begin
   if ItemType = mitItem then
     with NewMenuItem do
     begin
-      Tag := Longint(TMAction);
+      Tag := NativeInt(TMAction);
       OnClick := OnSelectMenuItem;
     end;  //if itemtype = mititem with newmenuitem do
   ParentMenu.Add(NewMenuItem);
 end;
 
-procedure TTMConfigReader.EnumMenuSettings(const Line: PChar; const Ext: Longint);
+procedure TTMConfigReader.EnumMenuSettings(const Line: PChar; const Ext: Pointer);
 var
   KeyName, Value: String;
   I: Integer;
@@ -1297,7 +1297,7 @@ begin
     end; //case directive of
 end;
 
-procedure TTMConfigReader.EnumMessages(const Line: PChar; const Ext: Longint);
+procedure TTMConfigReader.EnumMessages(const Line: PChar; const Ext: Pointer);
 var
   KeyName, Value: String;
   I: Integer;
@@ -1328,7 +1328,7 @@ begin
 end;
 
 procedure TTMConfigReader.EnumMultiAction(const Line: PChar;
-  const Ext: Integer);
+  const Ext: Pointer);
 const
   ParamNames: array[0..16] of TParamInfo = (
     (Name: ParamActionAction; Flags: []),               //0
@@ -1632,7 +1632,7 @@ begin
 end;
 
 procedure TTMConfigReader.EnumServices(const Line: PChar;
-  const Ext: Longint);
+  const Ext: Pointer);
 const
   ParamNames: array[0..0] of TParamInfo = (
     (Name: ParamServicesName; Flags: [piNoEmpty]){,
@@ -1680,7 +1680,7 @@ begin
 end;
 
 procedure TTMConfigReader.EnumVariables(const Line: PChar;
-  const Ext: Longint);
+  const Ext: Pointer);
 
   function GetRegVariable(RegRoot, RegKey, RegValue: String): String;
   var
@@ -1957,7 +1957,7 @@ begin
 
   { Read the settings }
   EnumIniSection(EnumMenuSettings, SectionName + MENUSETTINGSSUFFIX,
-      Longint(BcBarPopupMenu));
+      Pointer(BcBarPopupMenu));
   BcBarPopupMenu.FlushDoubleBuffer;
 
   { Read the menu items }
@@ -1973,7 +1973,7 @@ begin
 
   { Read the menu items }
   SaveLineNumber := LineNumber;
-  EnumIniSection(EnumMenuItems, SectionName, Longint(MenuItems));
+  EnumIniSection(EnumMenuItems, SectionName, Pointer(MenuItems));
   LineNumber := SaveLineNumber;
 end;
 
@@ -1986,7 +1986,7 @@ begin
 
   { Read the action items }
   SaveLineNumber := LineNumber;
-  EnumIniSection(EnumMultiAction, SectionName, Longint(MultiAction));
+  EnumIniSection(EnumMultiAction, SectionName, Pointer(MultiAction));
   LineNumber := SaveLineNumber;
 end;
 
@@ -2009,10 +2009,10 @@ begin
     MessagesDirectiveLines[J] := 0;
 
   { Read the settings }
-  EnumIniSection(EnumVariables, 'Variables', 0);
-  EnumIniSection(EnumAboutText, 'AboutText', 0);
-  EnumIniSection(EnumServices, 'Services', 0);
-  EnumIniSection(EnumConfig, 'Config', 0);
+  EnumIniSection(EnumVariables, 'Variables', nil);
+  EnumIniSection(EnumAboutText, 'AboutText', nil);
+  EnumIniSection(EnumServices, 'Services', nil);
+  EnumIniSection(EnumConfig, 'Config', nil);
   //Validate [Config] settings
   if (ConfigDirectiveLines[csTrayIcon] = 0) then
     if (ConfigDirectiveLines[csTrayIconAllRunning] = 0) and
@@ -2025,7 +2025,7 @@ begin
            (ConfigDirectiveLines[csTrayIconNoneRunning] = 0) then
         AbortParsing(SValMustSpecifyThreeStateIcons);
 
-  EnumIniSection(EnumMessages, 'Messages', 0);
+  EnumIniSection(EnumMessages, 'Messages', nil);
 
   ReadMultiAction(DoubleClickAction, 'DoubleClickAction');
   ReadMultiAction(LeftClickAction, 'LeftClickAction');

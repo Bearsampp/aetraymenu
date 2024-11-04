@@ -772,10 +772,15 @@ uses
   BcUtilities,
   BCLayeredWindows,
   Dialogs,
+  {$IFDEF DFS_DELPHI_11_UP}
+  System.Types,
+  System.UITypes,
+  {$ENDIF}
   ImgList;
 
 const
   scWinKey = $0200; // My extension to TShortCut to allow Win key status
+  NICE_LOOK_EXTRA_PADDING = 1;
 
 procedure BarMeasureItem(MenuItem: TMenuItem;
   ACanvas: TCanvas; var Width, Height: Integer; ABarVisible: Boolean);
@@ -862,7 +867,7 @@ begin
     if not ABarVisible or IsAfterMenuBreak(MenuItem) then
       Exit;
 
-    Inc(Width, Bar.Width + Bar.Space); { make space for graphical bar }
+    Inc(Width, Bar.Width + Bar.Space + NICE_LOOK_EXTRA_PADDING); { make space for graphical bar }
 
     if UpdatePopupHeight and MenuItem.Visible then
       SetPopupHeight(PopupHeight + Height);
@@ -879,6 +884,7 @@ var
   WindowHandle: THandle;
   DrawParts: TBarParts;
   ABarDoubleBuffer: TBitmap;
+  LBarWidth: Integer;
 begin
   WindowHandle := WindowFromDC(ACanvas.Handle);
 
@@ -904,10 +910,11 @@ begin
     R := ARect;
     if ABarVisible then
     begin
-      R.Right := R.Right - Width - Space; { remove bar width }
+      LBarWidth := Width + Space + NICE_LOOK_EXTRA_PADDING;
+      R.Right := R.Right - LBarWidth; { remove bar width }
       { TODO -cKylix/Linux -oJouni Airaksinen : Kylix supports OffsetRect or similar? }
       if Bar.Side = sLeft then
-        OffsetRect(R, Width + Space, 0);
+        OffsetRect(R, LBarWidth, 0);
     end;
 
     { set font if not set to use system font }

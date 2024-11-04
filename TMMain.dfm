@@ -10,8 +10,6 @@ object MainForm: TMainForm
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  OldCreateOrder = False
-  PixelsPerInch = 96
   TextHeight = 13
   object LeftClickPopup: TBcBarPopupMenu
     Images = ImageList
@@ -33,9 +31,10 @@ object MainForm: TMainForm
     Separators.Font.Style = []
     MenuFont.Charset = DEFAULT_CHARSET
     MenuFont.Color = clWindowText
-    MenuFont.Height = -11
-    MenuFont.Name = 'MS Sans Serif'
+    MenuFont.Height = -12
+    MenuFont.Name = 'Segoe UI'
     MenuFont.Style = []
+    UseSystemFont = False
     Left = 40
     Top = 8
   end
@@ -59,9 +58,10 @@ object MainForm: TMainForm
     Separators.Font.Style = []
     MenuFont.Charset = DEFAULT_CHARSET
     MenuFont.Color = clWindowText
-    MenuFont.Height = -11
-    MenuFont.Name = 'MS Sans Serif'
+    MenuFont.Height = -12
+    MenuFont.Name = 'Segoe UI'
     MenuFont.Style = []
+    UseSystemFont = False
     Left = 72
     Top = 8
   end
