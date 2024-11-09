@@ -31,10 +31,9 @@ object MainForm: TMainForm
     Separators.Font.Style = []
     MenuFont.Charset = DEFAULT_CHARSET
     MenuFont.Color = clWindowText
-    MenuFont.Height = -12
-    MenuFont.Name = 'Segoe UI'
+    MenuFont.Height = -11
+    MenuFont.Name = 'MS Sans Serif'
     MenuFont.Style = []
-    UseSystemFont = False
     Left = 40
     Top = 8
   end
@@ -58,10 +57,9 @@ object MainForm: TMainForm
     Separators.Font.Style = []
     MenuFont.Charset = DEFAULT_CHARSET
     MenuFont.Color = clWindowText
-    MenuFont.Height = -12
-    MenuFont.Name = 'Segoe UI'
+    MenuFont.Height = -11
+    MenuFont.Name = 'MS Sans Serif'
     MenuFont.Style = []
-    UseSystemFont = False
     Left = 72
     Top = 8
   end
