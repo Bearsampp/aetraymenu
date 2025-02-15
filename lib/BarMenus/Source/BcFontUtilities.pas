@@ -34,7 +34,7 @@ function CreateRotatedFont(F: TFont; const Angle: Integer): HFont;
 
 implementation
 
-uses SysUtils;
+uses SysUtils{$IFDEF DFS_DELPHI_11_UP},System.UITypes{$ENDIF};
 
 { ============================================================================
   CreateRotatedFont

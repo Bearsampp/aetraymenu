@@ -20,7 +20,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, BarMenus, JvComponent, JvTrayIcon, ExtCtrls,
   Contnrs, ImgList,
-  TMStruct, TMSrvCtrl, JvComponentBase;
+  TMStruct, TMSrvCtrl, JvComponentBase, System.ImageList;
 
 type
   TMainForm = class(TForm)
@@ -63,6 +63,7 @@ type
     procedure SetVariables(const Value: TObjectList);
     procedure SetCustomAboutText(const Value: TStrings);
     procedure SetHtmlAction(const Value: TStringList);
+    procedure ShowLoadingForm;
   protected
     { FIELDS }
     mutexHandle: THandle;
@@ -101,11 +102,13 @@ type
 
 var
   MainForm: TMainForm;
+  StopEnumWindows: Boolean;
 
 implementation
 
 uses JclFileUtils, JclStrings,
-     TMAbout, TMConfig, TMMsgs, TMCmnFunc;
+     TMAbout, TMConfig, TMMsgs, TMCmnFunc, TMLoading,
+     System.StrUtils;
 
 {$R *.dfm}
 
@@ -239,6 +242,8 @@ begin
 
   { Read and apply the configuration file }
   ReadConfig;
+
+  ShowLoadingForm;
 
   { Run the startup action }
   StartupAction.ExecuteAction;
@@ -511,6 +516,60 @@ end;
 procedure TMainForm.SetVariables(const Value: TObjectList);
 begin
   FVariables.Assign(Value);
+end;
+
+function IsAppForm(hWnd: HWND): Boolean;
+var
+  LClassName: array[0..255] of Char;
+begin
+  Result := (GetClassName(hWnd, LClassName, Length(LClassName)) > 0) and
+    (StrComp(LClassName, 'wbModelessDlg') = 0);
+end;
+
+function EnumWindowsProc(hWnd: HWND; lParam: LPARAM): BOOL; stdcall;
+var
+  LWindowText: array[0..255] of Char;
+begin
+  Result := True;
+  if IsWindowVisible(hWnd) then
+  begin
+    GetWindowText(hWnd, LWindowText, 255);
+    if StartsText('Bearsampp', LWindowText) and IsAppForm(hWnd) then
+    begin
+      StopEnumWindows := True;
+      Result := False;
+    end;
+  end;
+end;
+
+procedure TMainForm.ShowLoadingForm;
+const CHECKTIMEOUT = 400;
+var
+  LLoadingForm: TLoadingForm;
+begin
+  StopEnumWindows:= False;
+
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      LLoadingForm := TLoadingForm.Create(nil);
+      LLoadingForm.Caption := Format('%s - Loading',
+        [StringReplace(CustomAboutVersion, 'Version', CustomAboutHeader, [rfIgnoreCase])]);
+      try
+        LLoadingForm.Show;
+        Application.ProcessMessages;
+        while not (TThread.CheckTerminated or StopEnumWindows) do
+        begin
+          EnumWindows(@EnumWindowsProc, 0);
+          TThread.Sleep(CHECKTIMEOUT);
+          LLoadingForm.Update;
+          Application.ProcessMessages;
+        end;
+      finally
+        LLoadingForm.Free;
+      end;
+    end
+    ).Start;
 end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject; Button: TMouseButton;

@@ -79,7 +79,7 @@ procedure StringChange(var S: String; const FromStr, ToStr: String);
 
 implementation
 
-uses ShellApi, JclStrings, StrUtils, FileCtrl, RegStr, Messages;
+uses ShellApi, JclStrings, StrUtils, RegStr, Messages;
 
 function RemoveQuotes(const S: String): String;
 { Opposite of AddQuotes; removes any quotes around the string. }
@@ -108,7 +108,7 @@ begin
     Inc (P2);
   L := P2 - P;
   SetLength (Key, L);
-  Move (P^, Key[1], Length(Key));
+  SetString (Key, P, Length(Key));
   Key := TrimRight(Key);
   if P2^ = #0 then
     Exit;

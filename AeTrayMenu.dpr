@@ -16,7 +16,8 @@ uses
   TMCmnFunc in 'TMCmnFunc.pas',
   TMMsgs in 'TMMsgs.pas',
   TMHtmlWindow in 'TMHtmlWindow.pas' {HtmlWindow},
-  TMSrvCtrl in 'TMSrvCtrl.pas';
+  TMSrvCtrl in 'TMSrvCtrl.pas',
+  TMLoading in 'TMLoading.pas' {LoadingForm};
 
 {$R *.res}
 
