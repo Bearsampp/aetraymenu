@@ -17,11 +17,18 @@ object LoadingForm: TLoadingForm
   OnCreate = FormCreate
   TextHeight = 15
   object imgLogo: TImage
+    AlignWithMargins = True
     Left = 8
-    Top = 8
+    Top = 1
     Width = 32
-    Height = 32
+    Height = 45
+    Margins.Left = 8
+    Margins.Top = 0
+    Margins.Right = 0
+    Margins.Bottom = 0
+    Align = alLeft
     AutoSize = True
+    Center = True
     Picture.Data = {
       055449636F6E0000010009001010000001002000680400009600000018180000
       0100200088090000FE0400002020000001002000A8100000860E000030300000
@@ -10033,6 +10040,8 @@ object LoadingForm: TLoadingForm
       C64C7D366380CDAED5A1B3012351DFC98603467D6D311D07E8BDD57C9601D8DA
       A9C3E9D97FB84DC255F761FEADF86F15ADEBCADC4CCABA0000000049454E44AE
       426082}
+    ExplicitLeft = 0
+    ExplicitHeight = 32
   end
   object lblLoading: TLabel
     Left = 56
