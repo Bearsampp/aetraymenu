@@ -11,55 +11,15 @@ object MainForm: TMainForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   TextHeight = 13
-  object LeftClickPopup: TBcBarPopupMenu
+  object LeftClickPopup: TPopupMenu
     Images = ImageList
-    OwnerDraw = True
     OnPopup = LeftRightClickPopupPopup
-    Bar.Visible = False
-    Bar.BarPicture.Visible = False
-    Bar.BarBackPicture.Visible = False
-    Bar.BarCaption.Font.Charset = DEFAULT_CHARSET
-    Bar.BarCaption.Font.Color = clWhite
-    Bar.BarCaption.Font.Height = -19
-    Bar.BarCaption.Font.Name = 'Tahoma'
-    Bar.BarCaption.Font.Style = [fsBold, fsItalic]
-    Bar.BarCaption.Visible = False
-    Separators.Font.Charset = DEFAULT_CHARSET
-    Separators.Font.Color = clWindowText
-    Separators.Font.Height = -11
-    Separators.Font.Name = 'MS Sans Serif'
-    Separators.Font.Style = []
-    MenuFont.Charset = DEFAULT_CHARSET
-    MenuFont.Color = clWindowText
-    MenuFont.Height = -11
-    MenuFont.Name = 'MS Sans Serif'
-    MenuFont.Style = []
     Left = 40
     Top = 8
   end
-  object RightClickPopup: TBcBarPopupMenu
+  object RightClickPopup: TPopupMenu
     Images = ImageList
-    OwnerDraw = True
     OnPopup = LeftRightClickPopupPopup
-    Bar.Visible = False
-    Bar.BarPicture.Visible = False
-    Bar.BarBackPicture.Visible = False
-    Bar.BarCaption.Font.Charset = DEFAULT_CHARSET
-    Bar.BarCaption.Font.Color = clWhite
-    Bar.BarCaption.Font.Height = -19
-    Bar.BarCaption.Font.Name = 'Tahoma'
-    Bar.BarCaption.Font.Style = [fsBold, fsItalic]
-    Bar.BarCaption.Visible = False
-    Separators.Font.Charset = DEFAULT_CHARSET
-    Separators.Font.Color = clWindowText
-    Separators.Font.Height = -11
-    Separators.Font.Name = 'MS Sans Serif'
-    Separators.Font.Style = []
-    MenuFont.Charset = DEFAULT_CHARSET
-    MenuFont.Color = clWindowText
-    MenuFont.Height = -11
-    MenuFont.Name = 'MS Sans Serif'
-    MenuFont.Style = []
     Left = 72
     Top = 8
   end

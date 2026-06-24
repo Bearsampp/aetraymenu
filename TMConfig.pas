@@ -27,12 +27,12 @@ unit TMConfig;
 interface
 
 uses Windows, SysUtils, Consts, Classes, Contnrs, JvComponent, JvTrayIcon,
-     ImgList, BarMenus, Controls, Menus, ExtCtrls, Graphics,
+     ImgList, Controls, Menus, ExtCtrls, Graphics,
      TMStruct, TMCmnFunc, TMSrvCtrl;
 
 const
   MENUSETTINGSSUFFIX = '.Settings';
-      //suffix used in TTMConfigReader.ReadBcBarPopupMenu
+      //suffix used in TTMConfigReader.ReadPopupMenu
 
 type
   EParseError = class(Exception)
@@ -163,7 +163,7 @@ type
 
     { *** Key procs *** }
     procedure ReadSettings;
-    procedure ReadBcBarPopupMenu(const BcBarPopupMenu: TBcBarPopupMenu;
+    procedure ReadPopupMenu(const PopupMenu: TPopupMenu;
       const SectionName: String);
         { This procedure reads popup menu settings from a section
           with name SectionName + MENUSETTINGSSUFFIX, and the menu
@@ -954,6 +954,7 @@ var
   KeyName, Value: String;
   I: Integer;
   Directive: TMenuSectionDirective;
+  PopupMenu: TPopupMenu;
 begin
   SeparateDirective(Line, KeyName, Value);
 
@@ -966,335 +967,22 @@ begin
   if MenuDirectiveLines[Directive] <> 0 then
     AbortParsingFmt(SParsingEntryAlreadySpecified, ['Menu.*.Settings', KeyName]);
   MenuDirectiveLines[Directive] := LineNumber;
-  with TBcBarPopupMenu(Ext) do
-    case Directive of
-      mnAutoHotkeys: begin
-          if ISStrToBool(Value) then
-            AutoHotkeys := maAutomatic
-          else
-            AutoHotkeys := maManual;
-        end;
-      mnAutoLineReduction: begin
-          if ISStrToBool(Value) then
-            AutoLineReduction := maAutomatic
-          else
-            AutoLineReduction := maManual;
-        end;
-      mnBarBackPictureDrawStyle: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarBackPicture do
-            if Value = 'NORMAL' then
-              DrawStyle := BarMenus.dsNormal
-            else if Value = 'STRETCH' then
-              DrawStyle := BarMenus.dsStretch
-            else if Value = 'TILE' then
-              DrawStyle := BarMenus.dsTile
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarBackPictureHorzAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarBackPicture do
-            if Value = 'LEFT' then
-              HorzAlignment := haLeft
-            else if Value = 'CENTER' then
-              HorzAlignment := haCenter
-            else if Value = 'RIGHT' then
-              HorzAlignment := haRight
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarBackPictureOffsetX: begin
-          try
-            Bar.BarBackPicture.OffsetX := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarBackPictureOffsetY: begin
-          try
-            Bar.BarBackPicture.OffsetY := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarBackPicturePicture: begin
-          try
-            if PathIsAbsolute(Value) then
-              Bar.BarBackPicture.Picture.LoadFromFile(Value)
-            else
-              Bar.BarBackPicture.Picture.LoadFromFile(
-                  PathAppend(ExtractFileDir(Application.ExeName), Value));
-          except
-            AbortParsingFmt(SParsingCouldNotLoadFile, [Value, KeyName]);
-          end;
-          Bar.BarBackPicture.Visible := True;
-        end;
-      mnBarBackPictureTransparent:
-          Bar.BarBackPicture.Transparent := ISStrToBool(Value);
-      mnBarBackPictureVertAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarBackPicture do
-            if Value = 'TOP' then
-              VertAlignment := vaTop
-            else if Value = 'MIDDLE' then
-              VertAlignment := vaMiddle
-            else if Value = 'BOTTOM' then
-              VertAlignment := vaBottom
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarCaptionAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarCaption do
-            if Value = 'TOP' then
-              Alignment := vaTop
-            else if Value = 'MIDDLE' then
-              Alignment := vaMiddle
-            else if Value = 'BOTTOM' then
-              Alignment := vaBottom
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarCaptionCaption: begin
-          with Bar.BarCaption do
-          begin
-            Caption := Value;
-            Visible := True;
-          end;  //with bar.barcaption
-        end;
-      mnBarCaptionDepth: begin
-          try
-            Bar.BarCaption.Depth := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarCaptionDirection: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarCaption do
-            if Value = 'DOWNTOUP' then
-              Direction := dDownToUp
-            else if Value = 'UPTODOWN' then
-              Direction := dUpToDown
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarCaptionFont:
-          ISStrToFont(Value, Bar.BarCaption.Font);
-      mnBarCaptionHighlightColor: begin
-          try
-            Bar.BarCaption.HighlightColor := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnBarCaptionOffsetY: begin
-          try
-            Bar.BarCaption.OffsetY := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarCaptionShadowColor: begin
-          try
-            Bar.BarCaption.ShadowColor := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnBarPictureHorzAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarPicture do
-            if Value = 'LEFT' then
-              HorzAlignment := haLeft
-            else if Value = 'CENTER' then
-              HorzAlignment := haCenter
-            else if Value = 'RIGHT' then
-              HorzAlignment := haRight
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarPictureOffsetX: begin
-          try
-            Bar.BarPicture.OffsetX := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarPictureOffsetY: begin
-          try
-            Bar.BarPicture.OffsetY := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarPicturePicture: begin
-          try
-            if PathIsAbsolute(Value) then
-              Bar.BarPicture.Picture.LoadFromFile(Value)
-            else
-              Bar.BarPicture.Picture.LoadFromFile(
-                  PathAppend(ExtractFileDir(Application.ExeName), Value));
-          except
-            AbortParsingFmt(SParsingCouldNotLoadFile, [Value, KeyName]);
-          end;
-          Bar.BarPicture.Visible := True;
-        end;
-      mnBarPictureTransparent:
-          Bar.BarPicture.Transparent := ISStrToBool(Value);
-      mnBarPictureVertAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Bar.BarPicture do
-            if Value = 'TOP' then
-              VertAlignment := vaTop
-            else if Value = 'MIDDLE' then
-              VertAlignment := vaMiddle
-            else if Value = 'BOTTOM' then
-              VertAlignment := vaBottom
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarBorder: begin
-          try
-            Bar.Border := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnBarGradientEnd: begin
-          try
-            Bar.GradientEnd := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnBarGradientStart: begin
-          try
-            Bar.GradientStart := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnBarGradientStyle: begin
-          Value := UpperCase(Trim(Value));
-          with Bar do
-            if Value = 'DIAGONALLEFTTORIGHT' then
-              GradientStyle := gsDiagonalLeftRight
-            else if Value = 'DIAGONALRIGHTTOLEFT' then
-              GradientStyle := gsDiagonalRightLeft
-            else if Value = 'HORIZONTAL' then
-              GradientStyle := gsHorizontal
-            else if Value = 'VERTICAL' then
-              GradientStyle := gsVertical
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarSide: begin
-          Value := UpperCase(Trim(Value));
-          with Bar do
-            if Value = 'LEFT' then
-              Side := sLeft
-            else if Value = 'RIGHT' then
-              Side := sRight
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnBarSpace: begin
-          try
-            Bar.Space := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnBarVisible:
-          Bar.Visible := ISStrToBool(Value);
-      mnBarWidth: begin
-          try
-            Bar.Width := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnMenuFont: begin
-          ISStrToFont(Value, MenuFont);
-          UseSystemFont := False;
-        end;
-      mnSeparatorsAlignment: begin
-          Value := UpperCase(Trim(Value));
-          with Separators do
-            if Value = 'LEFT' then
-              Alignment := taLeftJustify
-            else if Value = 'CENTER' then
-              Alignment := taCenter
-            else if Value = 'RIGHT' then
-              Alignment := taRightJustify
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-      mnSeparatorsFade:
-          Separators.Fade := ISStrToBool(Value);
-      mnSeparatorsFadeColor: begin
-          try
-            Separators.FadeColor := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnSeparatorsFadeWidth: begin
-          try
-            Separators.FadeWidth := StrToInt(Value);
-          except
-            AbortParsingFmt(SParsingParamInvalidIntValue, [KeyName]);
-          end;
-        end;
-      mnSeparatorsFlatLines:
-          Separators.FlatLines := ISStrToBool(Value);
-      mnSeparatorsFont: begin
-          ISStrToFont(Value, Separators.Font);
-          Separators.UseSystemFont := False;
-        end;
-      mnSeparatorsGradientEnd: begin
-          try
-            Separators.GradientEnd := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnSeparatorsGradientStart: begin
-          try
-            Separators.GradientStart := StringToColor(Value);
-          except
-            AbortParsingFmt(SParsingInvalidColor, [KeyName]);
-          end;
-        end;
-      mnSeparatorsGradientStyle: begin
-          Value := UpperCase(Trim(Value));
-          with Separators do
-            if Value = 'DIAGONALLEFTTORIGHT' then
-              GradientStyle := gsDiagonalLeftRight
-            else if Value = 'DIAGONALRIGHTTOLEFT' then
-              GradientStyle := gsDiagonalRightLeft
-            else if Value = 'HORIZONTAL' then
-              GradientStyle := gsHorizontal
-            else if Value = 'VERTICAL' then
-              GradientStyle := gsVertical
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-       mnSeparatorsSeparatorStyle: begin
-          Value := UpperCase(Trim(Value));
-          with Separators do
-            if Value = 'NORMAL' then
-              SeparatorStyle := ssNormal
-            else if Value = 'SHORTLINE' then
-              SeparatorStyle := ssShortLine
-            else if Value = 'CAPTION' then
-              SeparatorStyle := ssCaption
-            else
-              AbortParsingFmt(SParsingInvalidDirectiveValue, [Value, KeyName]);
-        end;
-    end; //case directive of
+  PopupMenu := TPopupMenu(Ext);
+  case Directive of
+    mnAutoHotkeys:
+      if ISStrToBool(Value) then
+        PopupMenu.AutoHotkeys := maAutomatic
+      else
+        PopupMenu.AutoHotkeys := maManual;
+    mnAutoLineReduction:
+      if ISStrToBool(Value) then
+        PopupMenu.AutoLineReduction := maAutomatic
+      else
+        PopupMenu.AutoLineReduction := maManual;
+  else
+    { BarMenus styling keys are accepted for backward-compatible INI files.
+      Standard VCL popup menus do not expose equivalent styling properties. }
+  end;
 end;
 
 procedure TTMConfigReader.EnumMessages(const Line: PChar; const Ext: Pointer);
@@ -1941,8 +1629,8 @@ begin
   end;
 end;
 
-procedure TTMConfigReader.ReadBcBarPopupMenu(
-  const BcBarPopupMenu: TBcBarPopupMenu; const SectionName: String);
+procedure TTMConfigReader.ReadPopupMenu(
+  const PopupMenu: TPopupMenu; const SectionName: String);
 { This procedure reads popup menu settings from a section
   with name SectionName + MENUSETTINGSSUFFIX, and the menu
   from the section with name SectionName }
@@ -1957,11 +1645,10 @@ begin
 
   { Read the settings }
   EnumIniSection(EnumMenuSettings, SectionName + MENUSETTINGSSUFFIX,
-      Pointer(BcBarPopupMenu));
-  BcBarPopupMenu.FlushDoubleBuffer;
+      Pointer(PopupMenu));
 
   { Read the menu items }
-  ReadMenu(BcBarPopupMenu.Items, SectionName);
+  ReadMenu(PopupMenu.Items, SectionName);
 end;
 
 procedure TTMConfigReader.ReadMenu(const MenuItems: TMenuItem;

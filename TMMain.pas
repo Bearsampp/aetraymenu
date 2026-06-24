@@ -18,14 +18,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, BarMenus, JvComponent, JvTrayIcon, ExtCtrls,
+  Dialogs, Menus, JvComponent, JvTrayIcon, ExtCtrls,
   Contnrs, ImgList,
   TMStruct, TMSrvCtrl, JvComponentBase, System.ImageList;
 
 type
   TMainForm = class(TForm)
-    LeftClickPopup: TBcBarPopupMenu;
-    RightClickPopup: TBcBarPopupMenu;
+    LeftClickPopup: TPopupMenu;
+    RightClickPopup: TPopupMenu;
     TrayIcon: TJvTrayIcon;
     CheckServicesTimer: TTimer;
     ImageList: TImageList;
@@ -317,7 +317,7 @@ procedure TMainForm.LeftRightClickPopupPopup(Sender: TObject);
   end;
 
 begin
-  EnableItems((Sender as TBcBarPopupMenu).Items);
+  EnableItems((Sender as TPopupMenu).Items);
 end;
 
 procedure TMainForm.LoadBuiltInVariables;
@@ -412,8 +412,8 @@ begin
       { Read the configuration file }
       try
         ReadSettings;
-        ReadBcBarPopupMenu(LeftClickPopup, 'Menu.Left');
-        ReadBcBarPopupMenu(RightClickPopup, 'Menu.Right');
+        ReadPopupMenu(LeftClickPopup, 'Menu.Left');
+        ReadPopupMenu(RightClickPopup, 'Menu.Right');
       except
         on E: EParseError do
         begin

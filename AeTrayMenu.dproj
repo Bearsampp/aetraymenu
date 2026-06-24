@@ -99,14 +99,14 @@
         <DCC_AssertionsAtRuntime>False</DCC_AssertionsAtRuntime>
         <DCC_WriteableConstants>True</DCC_WriteableConstants>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-        <DCC_Define>RELEASE;madExcept;$(DCC_Define)</DCC_Define>
+        <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
         <DCC_Description>Aestan Tray Menu; Copyright (c) 2003-2007 Onno Broekmans; http://www.onnodb.com/aetraymenu</DCC_Description>
         <DCC_RangeChecking>True</DCC_RangeChecking>
         <DCC_MapFile>3</DCC_MapFile>
-        <DCC_UnitSearchPath>Lib\BarMenus\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_ResourcePath>Lib\BarMenus\Source;$(DCC_ResourcePath)</DCC_ResourcePath>
-        <DCC_ObjPath>Lib\BarMenus\Source;$(DCC_ObjPath)</DCC_ObjPath>
-        <DCC_IncludePath>Lib\BarMenus\Source;$(DCC_IncludePath)</DCC_IncludePath>
+        <DCC_UnitSearchPath>$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_ResourcePath>$(DCC_ResourcePath)</DCC_ResourcePath>
+        <DCC_ObjPath>$(DCC_ObjPath)</DCC_ObjPath>
+        <DCC_IncludePath>$(DCC_IncludePath)</DCC_IncludePath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
@@ -125,7 +125,7 @@
         <DCC_AssertionsAtRuntime>False</DCC_AssertionsAtRuntime>
         <DCC_WriteableConstants>True</DCC_WriteableConstants>
         <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-        <DCC_Define>madExcept;DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
         <DCC_Description>Aestan Tray Menu; Copyright (c) 2003-2007 Onno Broekmans; http://www.onnodb.com/aetraymenu</DCC_Description>
         <DCC_MapFile>3</DCC_MapFile>
         <DCC_RangeChecking>True</DCC_RangeChecking>
@@ -135,14 +135,14 @@
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
         <VerInfo_Build>0</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
-        <DCC_UnitSearchPath>Lib\BarMenus\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_MinorVer>0</VerInfo_MinorVer>
         <VerInfo_Build>0</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_UnitSearchPath>Lib\BarMenus\Source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <ProjectExtensions>
         <Borland.Personality>Delphi.Personality.12</Borland.Personality>

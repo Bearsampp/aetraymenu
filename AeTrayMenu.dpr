@@ -1,11 +1,6 @@
 program AeTrayMenu;
 
 uses
-  madExcept,
-  madLinkDisAsm,
-  madListHardware,
-  madListProcesses,
-  madListModules,
   Forms,
   SysUtils,
   Windows,
