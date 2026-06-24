@@ -33,6 +33,12 @@ uses Winapi.MultiMon;
 procedure TLoadingForm.FormCreate(Sender: TObject);
 begin
   SetFormPosition;
+
+  var ImagePath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
+    'core\resources\homepage\img\bearsampp.bmp';
+  if FileExists(ImagePath) then
+    imgLogo.Picture.LoadFromFile(ImagePath);
+
   aniLoading.Animate := True;
 end;
 
