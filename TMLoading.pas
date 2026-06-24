@@ -36,8 +36,15 @@ begin
 
   var ImagePath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
     'core\resources\homepage\img\bearsampp.bmp';
+
   if FileExists(ImagePath) then
-    imgLogo.Picture.LoadFromFile(ImagePath);
+  begin
+    try
+      imgLogo.Picture.LoadFromFile(ImagePath);
+    except
+      // Keep the DFM image
+    end;
+  end;
 
   aniLoading.Animate := True;
 end;
