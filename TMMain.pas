@@ -29,6 +29,7 @@ type
     TrayIcon: TJvTrayIcon;
     CheckServicesTimer: TTimer;
     ImageList: TImageList;
+    LoadingTimer: TTimer;
     procedure CheckServicesTimerTimer(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -37,6 +38,7 @@ type
     procedure LeftRightClickPopupPopup(Sender: TObject);
     procedure TrayIconMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure LoadingTimerTimer(Sender: TObject);
   private
     { FIELDS }
     FServices: TObjectList;
@@ -66,8 +68,6 @@ type
     procedure SetHtmlAction(const Value: TStringList);
     procedure ShowLoadingForm;
     procedure InitLoadingForm;
-    procedure WaitForMainWindowThread;
-    procedure PollForMainWindow(const AIntervalMs: Integer);
     procedure DismissLoadingForm;
   protected
     { FIELDS }
@@ -107,11 +107,9 @@ type
 
 var
   MainForm: TMainForm;
-  StopEnumWindows: Boolean;
 
 const
   APP_TITLE_PREFIX = 'Bearsampp';
-  LOADINGFORM_CHECK_INTERVAL_MS = 400;
 
 implementation
 
@@ -261,7 +259,8 @@ destructor TMainForm.Destroy;
 var
   J: Integer;
 begin
-  StopEnumWindows := True;
+  LoadingTimer.Enabled := False;
+  FreeAndNil(FLoadingForm);
 
   { Stop the timer }
   CheckServicesTimer.Enabled := False;
@@ -356,6 +355,50 @@ begin
   AddVar('CommonFiles', GetCommonFiles);
   AddVar('Cmd', GetCmdFileName, False);
   AddVar('Temp', GetTempDir);
+end;
+
+function IsAppForm(hWnd: HWND): Boolean;
+var
+  LClassName: array[0..255] of Char;
+begin
+  Result := (GetClassName(hWnd, LClassName, Length(LClassName)) > 0) and
+    (StrComp(LClassName, 'wbModelessDlg') = 0);
+end;
+
+function EnumWindowsProc(hWnd: HWND; lParam: LPARAM): BOOL; stdcall;
+var
+  LWindowText: array[0..MAX_PATH] of Char;
+begin
+  Result := True;
+
+  if not IsWindowVisible(hWnd) then
+    Exit;
+
+  GetWindowText(hWnd, LWindowText, Length(LWindowText));
+
+  if StartsText(APP_TITLE_PREFIX, LWindowText) and IsAppForm(hWnd) then
+  begin
+    PBoolean(lParam)^ := True;
+    Result := False;
+  end;
+end;
+
+procedure TMainForm.LoadingTimerTimer(Sender: TObject);
+var
+  LFound: Boolean;
+begin
+  LoadingTimer.Enabled := False;
+
+  LFound := False;
+  EnumWindows(@EnumWindowsProc, LPARAM(@LFound));
+
+  if LFound then
+  begin
+    DismissLoadingForm;
+    Exit;
+  end;
+
+  LoadingTimer.Enabled := True;
 end;
 
 procedure TMainForm.ReadConfig;
@@ -528,41 +571,14 @@ begin
   FVariables.Assign(Value);
 end;
 
-function IsAppForm(hWnd: HWND): Boolean;
-var
-  LClassName: array[0..255] of Char;
-begin
-  Result := (GetClassName(hWnd, LClassName, Length(LClassName)) > 0) and
-    (StrComp(LClassName, 'wbModelessDlg') = 0);
-end;
-
-function EnumWindowsProc(hWnd: HWND; lParam: LPARAM): BOOL; stdcall;
-var
-  LWindowText: array[0..MAX_PATH] of Char;
-begin
-  Result := True;
-
-  if not IsWindowVisible(hWnd) then
-    Exit;
-
-  GetWindowText(hWnd, LWindowText, Length(LWindowText));
-
-  if StartsText(APP_TITLE_PREFIX, LWindowText) and IsAppForm(hWnd) then
-  begin
-    StopEnumWindows := True;
-    Result := False;
-  end;
-end;
-
 procedure TMainForm.ShowLoadingForm;
 begin
   if Assigned(FLoadingForm) then
     Exit;
 
-  StopEnumWindows := False;
   InitLoadingForm;
 
-  TThread.CreateAnonymousThread(WaitForMainWindowThread).Start;
+  LoadingTimer.Enabled := True;
 end;
 
 procedure TMainForm.InitLoadingForm;
@@ -576,24 +592,6 @@ begin
   FLoadingForm.Caption := LCaption;
   FLoadingForm.Show;
   FLoadingForm.Update;
-end;
-
-procedure TMainForm.WaitForMainWindowThread;
-begin
-  try
-    PollForMainWindow(LOADINGFORM_CHECK_INTERVAL_MS);
-  finally
-    TThread.Queue(nil, DismissLoadingForm);
-  end;
-end;
-
-procedure TMainForm.PollForMainWindow(const AIntervalMs: Integer);
-begin
-  while not StopEnumWindows do
-  begin
-    EnumWindows(@EnumWindowsProc, 0);
-    TThread.Sleep(AIntervalMs);
-  end;
 end;
 
 procedure TMainForm.DismissLoadingForm;
