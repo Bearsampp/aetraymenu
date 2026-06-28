@@ -260,7 +260,7 @@ var
   J: Integer;
 begin
   LoadingTimer.Enabled := False;
-  FreeAndNil(FLoadingForm);
+  DismissLoadingForm;
 
   { Stop the timer }
   CheckServicesTimer.Enabled := False;
@@ -596,6 +596,10 @@ end;
 
 procedure TMainForm.DismissLoadingForm;
 begin
+  if not Assigned(FLoadingForm) then
+    Exit;
+
+  FLoadingForm.aniLoading.Animate := False;
   FreeAndNil(FLoadingForm);
 end;
 
