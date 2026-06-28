@@ -10051,12 +10051,17 @@ object LoadingForm: TLoadingForm
     Caption = 'Loading application, please wait...'
   end
   object aniLoading: TJvGIFAnimator
+    AlignWithMargins = True
     Left = 360
-    Top = 14
+    Top = 1
     Width = 20
-    Height = 20
+    Height = 45
+    Margins.Left = 0
+    Margins.Top = 0
+    Margins.Right = 8
+    Margins.Bottom = 0
     AsyncDrawing = True
-    FrameIndex = 9
+    Center = True
     Image.Data = {
       1446000047494638396114001400F70000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -10619,6 +10624,9 @@ object LoadingForm: TLoadingForm
       01081830756DA030185AB2646132FE0892233F78EC18F18B21AD195B6C010511
       F61D31D00DB160C39035B4B010C6164C1861DF12FF98308B351709348A0A32E4
       90830B2890024C86041963CB2CB3D842E28AC95D1410003B}
+    Align = alRight
+    ExplicitLeft = 368
+    ExplicitHeight = 20
   end
   object Bevel1: TBevel
     Left = 0

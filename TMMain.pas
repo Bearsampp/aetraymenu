@@ -20,7 +20,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, BarMenus, JvComponent, JvTrayIcon, ExtCtrls,
   Contnrs, ImgList,
-  TMStruct, TMSrvCtrl, JvComponentBase, System.ImageList;
+  TMStruct, TMSrvCtrl, JvComponentBase, System.ImageList, TMLoading;
 
 type
   TMainForm = class(TForm)
@@ -29,6 +29,7 @@ type
     TrayIcon: TJvTrayIcon;
     CheckServicesTimer: TTimer;
     ImageList: TImageList;
+    LoadingTimer: TTimer;
     procedure CheckServicesTimerTimer(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -37,6 +38,7 @@ type
     procedure LeftRightClickPopupPopup(Sender: TObject);
     procedure TrayIconMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure LoadingTimerTimer(Sender: TObject);
   private
     { FIELDS }
     FServices: TObjectList;
@@ -57,6 +59,7 @@ type
     FCustomAboutHeader: String;
     FCustomAboutText: TStrings;
     FHtmlActions: TStringList;
+    FLoadingForm: TLoadingForm;
 
     { METHODS }
     procedure SetServices(const Value: TObjectList);
@@ -64,6 +67,8 @@ type
     procedure SetCustomAboutText(const Value: TStrings);
     procedure SetHtmlAction(const Value: TStringList);
     procedure ShowLoadingForm;
+    procedure InitLoadingForm;
+    procedure DismissLoadingForm;
   protected
     { FIELDS }
     mutexHandle: THandle;
@@ -102,13 +107,14 @@ type
 
 var
   MainForm: TMainForm;
-  StopEnumWindows: Boolean;
+
+const
+  APP_TITLE_PREFIX = 'Bearsampp';
 
 implementation
 
 uses JclFileUtils, JclStrings,
-     TMAbout, TMConfig, TMMsgs, TMCmnFunc, TMLoading,
-     System.StrUtils;
+     TMAbout, TMConfig, TMMsgs, TMCmnFunc, System.StrUtils;
 
 {$R *.dfm}
 
@@ -253,6 +259,9 @@ destructor TMainForm.Destroy;
 var
   J: Integer;
 begin
+  LoadingTimer.Enabled := False;
+  DismissLoadingForm;
+
   { Stop the timer }
   CheckServicesTimer.Enabled := False;
 
@@ -346,6 +355,50 @@ begin
   AddVar('CommonFiles', GetCommonFiles);
   AddVar('Cmd', GetCmdFileName, False);
   AddVar('Temp', GetTempDir);
+end;
+
+function IsAppForm(hWnd: HWND): Boolean;
+var
+  LClassName: array[0..255] of Char;
+begin
+  Result := (GetClassName(hWnd, LClassName, Length(LClassName)) > 0) and
+    (StrComp(LClassName, 'wbModelessDlg') = 0);
+end;
+
+function EnumWindowsProc(hWnd: HWND; lParam: LPARAM): BOOL; stdcall;
+var
+  LWindowText: array[0..MAX_PATH] of Char;
+begin
+  Result := True;
+
+  if not IsWindowVisible(hWnd) then
+    Exit;
+
+  GetWindowText(hWnd, LWindowText, Length(LWindowText));
+
+  if StartsText(APP_TITLE_PREFIX, LWindowText) and IsAppForm(hWnd) then
+  begin
+    PBoolean(lParam)^ := True;
+    Result := False;
+  end;
+end;
+
+procedure TMainForm.LoadingTimerTimer(Sender: TObject);
+var
+  LFound: Boolean;
+begin
+  LoadingTimer.Enabled := False;
+
+  LFound := False;
+  EnumWindows(@EnumWindowsProc, LPARAM(@LFound));
+
+  if LFound then
+  begin
+    DismissLoadingForm;
+    Exit;
+  end;
+
+  LoadingTimer.Enabled := True;
 end;
 
 procedure TMainForm.ReadConfig;
@@ -518,58 +571,36 @@ begin
   FVariables.Assign(Value);
 end;
 
-function IsAppForm(hWnd: HWND): Boolean;
-var
-  LClassName: array[0..255] of Char;
-begin
-  Result := (GetClassName(hWnd, LClassName, Length(LClassName)) > 0) and
-    (StrComp(LClassName, 'wbModelessDlg') = 0);
-end;
-
-function EnumWindowsProc(hWnd: HWND; lParam: LPARAM): BOOL; stdcall;
-var
-  LWindowText: array[0..255] of Char;
-begin
-  Result := True;
-  if IsWindowVisible(hWnd) then
-  begin
-    GetWindowText(hWnd, LWindowText, 255);
-    if StartsText('Bearsampp', LWindowText) and IsAppForm(hWnd) then
-    begin
-      StopEnumWindows := True;
-      Result := False;
-    end;
-  end;
-end;
-
 procedure TMainForm.ShowLoadingForm;
-const CHECKTIMEOUT = 400;
-var
-  LLoadingForm: TLoadingForm;
 begin
-  StopEnumWindows:= False;
+  if Assigned(FLoadingForm) then
+    Exit;
 
-  TThread.CreateAnonymousThread(
-    procedure
-    begin
-      LLoadingForm := TLoadingForm.Create(nil);
-      LLoadingForm.Caption := Format('%s - Loading',
-        [StringReplace(CustomAboutVersion, 'Version', CustomAboutHeader, [rfIgnoreCase])]);
-      try
-        LLoadingForm.Show;
-        Application.ProcessMessages;
-        while not (TThread.CheckTerminated or StopEnumWindows) do
-        begin
-          EnumWindows(@EnumWindowsProc, 0);
-          TThread.Sleep(CHECKTIMEOUT);
-          LLoadingForm.Update;
-          Application.ProcessMessages;
-        end;
-      finally
-        LLoadingForm.Free;
-      end;
-    end
-    ).Start;
+  InitLoadingForm;
+
+  LoadingTimer.Enabled := True;
+end;
+
+procedure TMainForm.InitLoadingForm;
+var
+  LCaption: string;
+begin
+  LCaption := Format('%s - Loading',
+    [StringReplace(CustomAboutVersion, 'Version', CustomAboutHeader, [rfIgnoreCase])]);
+
+  FLoadingForm := TLoadingForm.Create(nil);
+  FLoadingForm.Caption := LCaption;
+  FLoadingForm.Show;
+  FLoadingForm.Update;
+end;
+
+procedure TMainForm.DismissLoadingForm;
+begin
+  if not Assigned(FLoadingForm) then
+    Exit;
+
+  FLoadingForm.aniLoading.Animate := False;
+  FreeAndNil(FLoadingForm);
 end;
 
 procedure TMainForm.TrayIconDblClick(Sender: TObject; Button: TMouseButton;

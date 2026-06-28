@@ -31,8 +31,23 @@ uses Winapi.MultiMon;
 {$R *.dfm}
 
 procedure TLoadingForm.FormCreate(Sender: TObject);
+var
+  LImagePath: string;
 begin
   SetFormPosition;
+
+  LImagePath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
+    'core\resources\homepage\img\bearsampp.bmp';
+
+  if FileExists(LImagePath) then
+  begin
+    try
+      imgLogo.Picture.LoadFromFile(LImagePath);
+    except
+      // Keep the DFM image
+    end;
+  end;
+
   aniLoading.Animate := True;
 end;
 
