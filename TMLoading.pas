@@ -5,14 +5,16 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
-  JvExControls, JvAnimatedImage, JvGIFCtrl, JvGIF;
+  JvExControls, JvAnimatedImage, JvGIFCtrl, JvGIF, Vcl.VirtualImage,
+  Vcl.BaseImageCollection, Vcl.ImageCollection;
 
 type
   TLoadingForm = class(TForm)
-    imgLogo: TImage;
     lblLoading: TLabel;
     aniLoading: TJvGIFAnimator;
     Bevel1: TBevel;
+    imgLogo: TVirtualImage;
+    imcImageCollection: TImageCollection;
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -23,6 +25,10 @@ type
 
 var
   LoadingForm: TLoadingForm;
+
+const
+  LOGO_NAME = 'bearsampp32';
+  LOGO_PATH = 'core\resources\homepage\img\bearsampp.bmp';
 
 implementation
 
@@ -36,13 +42,16 @@ var
 begin
   SetFormPosition;
 
-  LImagePath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-    'core\resources\homepage\img\bearsampp.bmp';
+  lblLoading.Top := (ClientHeight - lblLoading.Height) div 2;
+
+  LImagePath := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + LOGO_PATH;
 
   if FileExists(LImagePath) then
   begin
     try
-      imgLogo.Picture.LoadFromFile(LImagePath);
+      imcImageCollection.Images.Clear;
+      imcImageCollection.Add(LOGO_NAME, LImagePath);
+      imgLogo.ImageName := LOGO_NAME;
     except
       // Keep the DFM image
     end;
