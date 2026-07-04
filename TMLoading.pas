@@ -19,6 +19,7 @@ type
   private
     { Private declarations }
     procedure SetFormPosition;
+    procedure UpdateCollectionImage(const AItemName, AFileName: string);
   public
     { Public declarations }
   end;
@@ -49,11 +50,12 @@ begin
   if FileExists(LImagePath) then
   begin
     try
-      imcImageCollection.Images.Clear;
-      imcImageCollection.Add(LOGO_NAME, LImagePath);
+      UpdateCollectionImage(LOGO_NAME, LImagePath);
       imgLogo.ImageName := LOGO_NAME;
+      imgLogo.Invalidate;
     except
-      // Keep the DFM image
+      on E: Exception do
+        OutputDebugString(PChar('Loading logo failed: ' + E.Message));
     end;
   end;
 
@@ -82,6 +84,31 @@ begin
     Left := Screen.WorkAreaRect.Right - Width;
     Top := Screen.WorkAreaRect.Bottom - Height;
   end;
+end;
+
+procedure TLoadingForm.UpdateCollectionImage(const AItemName,
+  AFileName: string);
+var
+  Idx, I: Integer;
+  Item: TImageCollectionItem;
+begin
+  Idx := imcImageCollection.GetIndexByName(AItemName);
+  if Idx >= 0 then
+  begin
+    Item := imcImageCollection.Images[Idx];
+
+    // Replace all existing source (scale) variants with the new file
+    for I := 0 to Item.SourceImages.Count - 1 do
+      Item.SourceImages[I].Image.LoadFromFile(AFileName);
+
+    // Notify the item/collection that it changed
+    Item.Change;
+  end
+  else
+  begin
+    // Doesn't exist yet — Add creates the item and appends a source image
+    imcImageCollection.Add(AItemName, AFileName);
   end;
+end;
 
 end.
