@@ -85,4 +85,11 @@ object MainForm: TMainForm
     Left = 168
     Top = 8
   end
+  object LoadingTimer: TTimer
+    Enabled = False
+    Interval = 400
+    OnTimer = LoadingTimerTimer
+    Left = 8
+    Top = 8
+  end
 end
