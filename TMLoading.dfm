@@ -17,7 +17,7 @@ object LoadingForm: TLoadingForm
   OnCreate = FormCreate
   TextHeight = 15
   object lblLoading: TLabel
-    Left = 56
+    Left = 48
     Top = 16
     Width = 178
     Height = 15
