@@ -70,6 +70,7 @@ function InstShellExec(const Filename, Params, Verb: String; WorkingDir: String;
 function InternalRegQueryStringValue (H: HKEY; Name: PChar; var ResultStr: String;
   Type1, Type2: DWORD): Boolean;
 function KillInstance(const ID: String): Boolean;
+function ReloadInstance(const ID: String): Boolean;
 function RegQueryStringValue(H: HKEY; Name: PChar; var ResultStr: String): Boolean;
 function RemoveBackslash(const S: String): String;
 function RemoveBackslashUnlessRoot(const S: String): String;
@@ -464,6 +465,26 @@ begin
   if wndHandle <> 0 then
   begin
     SendMessage(wndHandle, WM_CLOSE, 0, 0);
+    Result := True;
+  end;  //if wndhandle <> nil
+end;
+
+function ReloadInstance(const ID: String): Boolean;
+{ Tells another instance of the aetraymenu application to re-read its
+  configuration file (rebuilding its menus and services list) in place,
+  without restarting. Uses a registered window message so the value is
+  identical in this process and the target process. }
+var
+  wndHandle: HWND;
+begin
+  Result := False;
+  if ID = '' then
+    Exit; //must specify an id
+
+  wndHandle := FindWindow(nil, PChar('AeTrayMenu[' + ID + ']'));
+  if wndHandle <> 0 then
+  begin
+    SendMessage(wndHandle, RegisterWindowMessage('AeTrayMenuReloadConfig'), 0, 0);
     Result := True;
   end;  //if wndhandle <> nil
 end;

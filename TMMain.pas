@@ -57,6 +57,7 @@ type
     FCustomAboutHeader: String;
     FCustomAboutText: TStrings;
     FHtmlActions: TStringList;
+    FReloadConfigMsg: UINT;
 
     { METHODS }
     procedure SetServices(const Value: TObjectList);
@@ -67,6 +68,10 @@ type
   protected
     { FIELDS }
     mutexHandle: THandle;
+    { METHODS }
+    procedure WndProc(var Message: TMessage); override;
+      { Handles the registered "reload config" message sent by another instance
+        started with the -reloadconfig switch. }
   public
     { PROPERTIES }
     property Services: TObjectList read FServices write SetServices;
@@ -218,12 +223,26 @@ begin
   ClearItems(RightClickPopup.Items);
 end;
 
+procedure TMainForm.WndProc(var Message: TMessage);
+begin
+  if (FReloadConfigMsg <> 0) and (Message.Msg = FReloadConfigMsg) then
+    { Re-read the configuration in place (rebuild menus/services). This does NOT
+      reset/restart services; it only refreshes what the tray displays and runs. }
+    ReadConfig
+  else
+    inherited WndProc(Message);
+end;
+
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited;
 
   { Memory inits }
   mutexHandle := 0;
+  { Register the system-wide message used to trigger an in-place config reload.
+    The launcher process (started with -reloadconfig) registers the same string
+    and thus obtains the same message value, so its SendMessage reaches WndProc. }
+  FReloadConfigMsg := RegisterWindowMessage('AeTrayMenuReloadConfig');
   FServices := TObjectList.Create(True);
   FVariables := TObjectList.Create(True);
   FHtmlActions := TStringList.Create;

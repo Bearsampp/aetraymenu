@@ -24,6 +24,16 @@ begin
     Exit;
   end;
 
+  { Tell an already-running instance to re-read its configuration (menu, services,
+    etc.) without restarting. Used by QuickPick so a freshly installed module version
+    is reflected in the tray menu. Signals the existing instance and exits without
+    creating a new tray. }
+  if FindCmdLineSwitch('reloadconfig', ['-'], True) then
+  begin
+    ReloadInstance(FindCmdSwitch('-id='));
+    Exit;
+  end;
+
   { Start it up! }
   Application.Initialize;
   Application.MainFormOnTaskbar := False;
