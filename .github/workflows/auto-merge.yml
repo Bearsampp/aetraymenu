@@ -9,6 +9,8 @@ permissions:
 jobs:
   metadata:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     outputs:
       repository: ${{ steps.metadata.outputs.repository }}
@@ -28,12 +30,13 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' }}
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       PR_URL: ${{github.event.pull_request.html_url}}
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
     steps:
       - id: dependabot
-        uses: dependabot/fetch-metadata@v3
+        uses: dependabot/fetch-metadata@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
